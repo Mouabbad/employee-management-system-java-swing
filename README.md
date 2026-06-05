@@ -102,12 +102,12 @@ Developed as a Java Swing desktop application for employee management.
 # Les interfaces 
 ## Login Page
 
-![Login Page](screenshots/1.png)
+![Login Page](screenshots/2.png)
 
 ## Dashboard
 
-![Dashboard](screenshots/2.png)
+![Dashboard](screenshots/3.png)
 
 ## Add Employee
 
-![Add Employee](screenshots/3.png)
+![Add Employee](screenshots/4.png)
