@@ -3,125 +3,147 @@ package controller;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.sql.ResultSet;
-
+import java.sql.*;
 
 public class Login extends JFrame implements ActionListener {
 
-    JTextField tfUsername;
-    JPasswordField tfPassword;
-    JButton loginBtn;
-  
+    private JTextField tfusername;
+    private JPasswordField pfpassword;
+    private JButton login;
+    private JCheckBox showPasswordCheckbox; // Ajouter le JCheckBox
 
-    public Login() {
-        setTitle("Login admin");
-        setSize(450, 550);
+    Login() {
+        setTitle("Employee Management System - Login");
+        setSize(1280, 920);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setResizable(false);
 
-        // Background Panel with gradient color
-        JPanel mainPanel = new JPanel() {
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g;
-                Color c1 = new Color(58, 123, 213);
-                Color c2 = new Color(0, 210, 255);
-                GradientPaint gp = new GradientPaint(0, 0, c1, 0, getHeight(), c2);
-                g2d.setPaint(gp);
-                g2d.fillRect(0, 0, getWidth(), getHeight());
+        JPanel panel = new JPanel();
+        panel.setBackground(Color.decode("#87CEEB"));
+        panel.setLayout(new GridBagLayout());
+
+        JPanel card = new JPanel();
+        card.setPreferredSize(new Dimension(350, 380));
+        card.setBackground(Color.WHITE);
+        card.setLayout(null);
+        card.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(210, 210, 210)),
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+        card.setOpaque(true);
+
+        JLabel title = new JLabel(" Connexion");
+        ImageIcon icon = new ImageIcon(getClass().getResource("/icons/cle.png"));
+
+        // Redimensionner l'icône
+        Image image = icon.getImage();
+        Image newImage = image.getScaledInstance(30, 30, Image.SCALE_SMOOTH); // Redimensionner à 30x30
+        icon = new ImageIcon(newImage);
+
+        // Ajouter l'icône au JLabel avec le texte
+        title.setIcon(icon);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        title.setBounds(65, 20, 200, 35);
+        title.setForeground(new Color(50, 50, 80));
+        title.setHorizontalAlignment(SwingConstants.LEFT);  // Aligner le texte à gauche
+        card.add(title);
+
+        tfusername = new JTextField();
+        tfusername.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        tfusername.setBounds(30, 80, 260, 50);
+        tfusername.setBorder(BorderFactory.createTitledBorder("Nom d'utilisateur"));
+        card.add(tfusername);
+
+        pfpassword = new JPasswordField();
+        pfpassword.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        pfpassword.setBounds(30, 150, 260, 50);
+        pfpassword.setBorder(BorderFactory.createTitledBorder("Mot de passe"));
+        card.add(pfpassword);
+
+        // Créer le JCheckBox pour afficher/masquer le mot de passe
+        showPasswordCheckbox = new JCheckBox("Afficher le mot de passe");
+        showPasswordCheckbox.setBounds(30, 210, 200, 25);
+        showPasswordCheckbox.setBackground(Color.WHITE);
+        showPasswordCheckbox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (showPasswordCheckbox.isSelected()) {
+                    // Si coché, afficher le mot de passe
+                    pfpassword.setEchoChar((char) 0); // Afficher le mot de passe
+                } else {
+                    // Si décoché, masquer le mot de passe
+                    pfpassword.setEchoChar('*'); // Masquer le mot de passe
+                }
             }
-        };
-        mainPanel.setBounds(0, 0, 450, 550);
-        mainPanel.setLayout(null);
-        add(mainPanel);
+        });
+        card.add(showPasswordCheckbox);
 
-        // Title
-        JLabel title = new JLabel("HELLO & WELCOME");
-        title.setBounds(90, 40, 300, 40);
-        title.setFont(new Font("SansSerif", Font.BOLD, 22));
-        title.setForeground(Color.WHITE);
-        mainPanel.add(title);
+        login = new JButton("SE CONNECTER");
+        login.setBounds(30, 250, 260, 50);
+        login.setBackground(new Color(0, 123, 255));
+        login.setForeground(Color.WHITE);
+        login.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        login.setFocusPainted(false);
+        login.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        login.setBorder(BorderFactory.createLineBorder(new Color(0, 105, 217)));
+        login.addActionListener(this);
 
-        /*JLabel subtitle = new JLabel("<html><center>Lorem ipsum dolor sit amet, consectetur<br>adipiscing elit.</center></html>");
-        subtitle.setBounds(90, 80, 300, 50);
-        subtitle.setFont(new Font("SansSerif", Font.PLAIN, 12));
-        subtitle.setForeground(Color.WHITE);
-        mainPanel.add(subtitle);
-        */
-        // Login Panel (white box)
-        JPanel loginPanel = new JPanel();
-        loginPanel.setLayout(null);
-        loginPanel.setBackground(Color.WHITE);
-        loginPanel.setBounds(50, 150, 340, 300);
-        loginPanel.setBorder(BorderFactory.createLineBorder(new Color(180, 180, 180), 1));
-        mainPanel.add(loginPanel);
+        login.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent evt) {
+                login.setBackground(new Color(0, 105, 217));
+            }
+            public void mouseExited(MouseEvent evt) {
+                login.setBackground(new Color(0, 123, 255));
+            }
+        });
+        card.add(login);
 
-        JLabel loginTitle = new JLabel("USER LOGIN");
-        loginTitle.setBounds(110, 20, 150, 30);
-        loginTitle.setFont(new Font("SansSerif", Font.BOLD, 16));
-        loginPanel.add(loginTitle);
-
-        tfUsername = new JTextField();
-        tfUsername.setBounds(50, 70, 240, 35);
-        tfUsername.setBorder(BorderFactory.createTitledBorder("Username"));
-        loginPanel.add(tfUsername);
-
-        tfPassword = new JPasswordField();
-        tfPassword.setBounds(50, 120, 240, 35);
-        tfPassword.setBorder(BorderFactory.createTitledBorder("Password"));
-        loginPanel.add(tfPassword);
-
-        JCheckBox remember = new JCheckBox("Remember");
-        remember.setBounds(50, 170, 100, 20);
-        remember.setBackground(Color.WHITE);
-        loginPanel.add(remember);
-
-        JLabel forgot = new JLabel("Forget Password?");
-        forgot.setBounds(180, 170, 120, 20);
-        forgot.setFont(new Font("SansSerif", Font.PLAIN, 12));
-        forgot.setForeground(Color.GRAY);
-        loginPanel.add(forgot);
-
-        loginBtn = new JButton("LOGIN");
-        loginBtn.setBounds(90, 210, 160, 40);
-        loginBtn.setBackground(new Color(85, 0, 255));
-        loginBtn.setForeground(Color.WHITE);
-        loginBtn.setFont(new Font("SansSerif", Font.BOLD, 14));
-        loginBtn.setFocusPainted(false);
-        loginBtn.addActionListener(this);
-        loginPanel.add(loginBtn);
-        
-       
-
+        panel.add(card);
+        add(panel);
         setVisible(true);
     }
 
     @Override
-public void actionPerformed(ActionEvent e) {
-    String username = tfUsername.getText();
-    String password = String.valueOf(tfPassword.getPassword());
+    public void actionPerformed(ActionEvent ae) {
+        try {
+            String username = tfusername.getText();
+            String password = new String(pfpassword.getPassword());
 
-    try {
-        conn c = new conn();
-        String query = "SELECT * FROM admin WHERE username = '" + username + "' AND password = '" + password + "'";
-        ResultSet rs = c.s.executeQuery(query);
+            if (username.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(this, 
+                    "Veuillez remplir tous les champs", 
+                    "Erreur", 
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-        if (rs.next()) {
-            JOptionPane.showMessageDialog(this, "Login réussi !");
-           dispose(); // fermer login
-           // new home(); // lancer page home
-        } else {
-            JOptionPane.showMessageDialog(this, "Nom d'utilisateur ou mot de passe incorrect !");
+            conn c = new conn();
+            String query = "SELECT * FROM admin WHERE username = ? AND password = ?";
+            PreparedStatement pstmt = c.getConnection().prepareStatement(query);
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                setVisible(false);
+                new dashbordAdmin().setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this, 
+                    "Nom d'utilisateur ou mot de passe incorrect", 
+                    "Erreur d'authentification", 
+                    JOptionPane.ERROR_MESSAGE);
+                pfpassword.setText("");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, 
+                "Une erreur est survenue: " + e.getMessage(), 
+                "Erreur", 
+                JOptionPane.ERROR_MESSAGE);
         }
-    } catch (Exception ex) {
-        ex.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Erreur de connexion à la base de données !");
     }
-}
-
 
     public static void main(String[] args) {
-        new Login();
+        SwingUtilities.invokeLater(Login::new);
     }
 }
